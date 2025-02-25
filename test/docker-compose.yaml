@@ -1,0 +1,59 @@
+services:
+  hub:
+    build:
+      context: ..
+      dockerfile: test/jupyterhub/Dockerfile
+      args:
+        JUPYTERHUB_VERSION: latest
+    restart: always
+    image: jupyterhub
+    container_name: jupyterhub
+    networks:
+      - jupyterhub-network
+    volumes:
+      - "../test/jupyterhub/jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "jupyterhub-data:/data"
+    ports:
+      - "8060:8000"
+    environment:
+      JUPYTERHUB_ADMIN: admin
+      DOCKER_NETWORK_NAME: jupyterhub-network
+      DOCKER_NOTEBOOK_IMAGE: quay.io/jupyter/base-notebook:latest
+      DOCKER_NOTEBOOK_DIR: /home/jovyan
+  keycloak:
+    image: public.ecr.aws/eodh/eodh-keycloak:26.0.4-0.2.3.1
+    command:
+      - start-dev
+      - --import-realm
+      - --features
+      - dynamic-scopes:v1,token-exchange:v1
+      - --spi-oauth2-token-exchange-provider
+      - scope-enhanced-token-exchange
+    container_name: keycloak
+    environment:
+      KC_LOG_LEVEL: INFO
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/test-realm.json:/opt/keycloak/data/import/test-realm.json
+    networks:
+      - jupyterhub-network
+    restart: always
+  workspaces:
+    build:
+      context: workspaces
+      dockerfile: Dockerfile
+    container_name: workspaces
+    environment:
+      ALLOWED_USERS: user
+    ports:
+      - "8000:8000"
+    networks:
+      - jupyterhub-network
+    restart: always
+volumes:
+  jupyterhub-data:
+networks:
+  jupyterhub-network:
+    name: jupyterhub-network
