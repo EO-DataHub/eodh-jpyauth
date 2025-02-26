@@ -48,14 +48,31 @@ c.JupyterHub.db_url = "sqlite:////data/jupyterhub.sqlite"
 
 # Allow all signed-up users to login
 c.Authenticator.allow_all = True
+c.Authenticator.auto_login = True
+c.Authenticator.enable_auth_state = True
 
-# Authenticate users with Native Authenticator
-c.JupyterHub.authenticator_class = "nativeauthenticator.NativeAuthenticator"
+# Authenticate users with GenericOAuthenticator
+c.JupyterHub.authenticator_class = "oauthenticator.generic.GenericOAuthenticator"
+c.GenericOAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
+c.GenericOAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
+c.GenericOAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
+c.GenericOAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
+c.GenericOAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
+c.GenericOAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
+c.GenericOAuthenticator.username_key = os.environ.get(
+    "OAUTH_USERNAME_KEY", "preferred_username"
+)
+c.GenericOAuthenticator.scope = ["openid"]
 
-# Allow anyone to sign-up without approval
-c.NativeAuthenticator.open_signup = True
-
-# Allowed admins
-admin = os.environ.get("JUPYTERHUB_ADMIN")
-if admin:
-    c.Authenticator.admin_users = [admin]
+# Authenticate users with JyKAuthenticator
+# c.JupyterHub.authenticator_class = "jyk_auth.JyKAuthenticator"
+# c.JyKAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
+# c.JyKAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
+# c.JyKAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
+# c.JyKAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
+# c.JyKAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
+# c.JyKAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
+# c.JyKAuthenticator.username_key = os.environ.get(
+#     "OAUTH_USERNAME_KEY", "preferred_username"
+# )
+# c.JyKAuthenticator.scope = ["openid"]

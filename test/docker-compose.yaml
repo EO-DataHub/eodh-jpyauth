@@ -18,9 +18,16 @@ services:
       - "8060:8000"
     environment:
       JUPYTERHUB_ADMIN: admin
+      JUPYTERHUB_CRYPT_KEY: 7034981f1b2d106eaed55c5ba426d197d9da62c2ddf40767be4cb2bf50ff4c8f
       DOCKER_NETWORK_NAME: jupyterhub-network
       DOCKER_NOTEBOOK_IMAGE: quay.io/jupyter/base-notebook:latest
       DOCKER_NOTEBOOK_DIR: /home/jovyan
+      OAUTH_CLIENT_ID: client
+      OAUTH_CLIENT_SECRET: e3rjr7sz9NVuAtRsg74XJUrEWG408o7W
+      OAUTH_AUTHORIZE_URL: http://keycloak:8080/realms/test/protocol/openid-connect/auth
+      OAUTH_TOKEN_URL: http://keycloak:8080/realms/test/protocol/openid-connect/token
+      OAUTH_CALLBACK_URL: http://jupyterhub:8060/hub/oauth_callback
+      OAUTH_USERDATA_URL: http://keycloak:8080/realms/test/protocol/openid-connect/userinfo
   keycloak:
     image: public.ecr.aws/eodh/eodh-keycloak:26.0.4-0.2.3.1
     command:
@@ -32,6 +39,8 @@ services:
       - scope-enhanced-token-exchange
     container_name: keycloak
     environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_LOG_LEVEL: INFO
     ports:
       - "8080:8080"
