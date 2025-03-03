@@ -52,27 +52,27 @@ c.Authenticator.auto_login = True
 c.Authenticator.enable_auth_state = True
 
 # Authenticate users with GenericOAuthenticator
-c.JupyterHub.authenticator_class = "oauthenticator.generic.GenericOAuthenticator"
-c.GenericOAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
-c.GenericOAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
-c.GenericOAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
-c.GenericOAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
-c.GenericOAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
-c.GenericOAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
-c.GenericOAuthenticator.username_key = os.environ.get(
-    "OAUTH_USERNAME_KEY", "preferred_username"
-)
-c.GenericOAuthenticator.scope = ["openid"]
-
-# Authenticate users with JyKAuthenticator
-# c.JupyterHub.authenticator_class = "jyk_auth.JyKAuthenticator"
-# c.JyKAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
-# c.JyKAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
-# c.JyKAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
-# c.JyKAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
-# c.JyKAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
-# c.JyKAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
-# c.JyKAuthenticator.username_key = os.environ.get(
+# c.JupyterHub.authenticator_class = "oauthenticator.generic.GenericOAuthenticator"
+# c.GenericOAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
+# c.GenericOAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
+# c.GenericOAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
+# c.GenericOAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
+# c.GenericOAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
+# c.GenericOAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
+# c.GenericOAuthenticator.username_key = os.environ.get(
 #     "OAUTH_USERNAME_KEY", "preferred_username"
 # )
-# c.JyKAuthenticator.scope = ["openid"]
+# c.GenericOAuthenticator.scope = ["openid"]
+
+# Authenticate users with EODHAuthenticator
+c.JupyterHub.authenticator_class = "jyk_auth.EODHAuthenticator"
+c.EODHAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
+c.EODHAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
+c.EODHAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
+c.EODHAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
+c.EODHAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
+c.EODHAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
+c.EODHAuthenticator.username_key = os.environ.get(
+    "OAUTH_USERNAME_KEY", "preferred_username"
+)
+c.EODHAuthenticator.scope = ["openid"]
