@@ -12,6 +12,10 @@
       "directAccessGrantsEnabled": true,
       "redirectUris": [
         "http://jupyterhub:8060/*"
+      ],
+      "defaultClientScopes": [
+        "profile",
+        "email"
       ]
     }
   ],

@@ -4,6 +4,18 @@ docker ?= docker
 .SILENT:
 MAKEFLAGS += --no-print-directory
 
-.PHONY: run-test
-run-test:
-	cd test; $(docker) compose up --build
+.PHONY: run-dev
+run-dev:
+	cd test && \
+	$(docker) compose up --build -d && \
+	$(docker) compose logs -f -t
+
+.PHONY: stop-dev
+stop-dev:
+	cd test && \
+	$(docker) compose down
+
+.PHONY: destroy-dev
+destroy-dev:
+	cd test && \
+	$(docker) compose rm -v

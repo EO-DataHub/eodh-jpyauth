@@ -65,14 +65,17 @@ c.Authenticator.enable_auth_state = True
 # c.GenericOAuthenticator.scope = ["openid"]
 
 # Authenticate users with EODHAuthenticator
-c.JupyterHub.authenticator_class = "jyk_auth.EODHAuthenticator"
+c.JupyterHub.authenticator_class = "eodh_jpy.auth.EODHAuthenticator"
 c.EODHAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
 c.EODHAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
 c.EODHAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
 c.EODHAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
 c.EODHAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
 c.EODHAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
-c.EODHAuthenticator.username_key = os.environ.get(
-    "OAUTH_USERNAME_KEY", "preferred_username"
+c.EODHAuthenticator.username_claim = os.environ.get(
+    "OAUTH_USERNAME_CLAIM", "preferred_username"
 )
 c.EODHAuthenticator.scope = ["openid"]
+c.EODHAuthenticator.enable_logout = True
+c.EODHAuthenticator.oauth_logout_url = os.environ["OAUTH_LOGOUT_URL"]
+c.EODHAuthenticator.oauth_logout_redirect_uri = os.environ["OAUTH_LOGOUT_REDIRECT_URI"]
