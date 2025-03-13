@@ -18,4 +18,4 @@ stop-dev:
 .PHONY: destroy-dev
 destroy-dev:
 	cd test && \
-	$(docker) compose rm -v
+	$(docker) compose rm -fsv

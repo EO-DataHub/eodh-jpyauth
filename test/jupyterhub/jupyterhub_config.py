@@ -39,7 +39,7 @@ c.DockerSpawner.remove = True
 c.DockerSpawner.debug = True
 
 # User containers will access hub by container name on the Docker network
-c.JupyterHub.hub_ip = "jupyterhub"
+c.JupyterHub.hub_ip = "workspace1.jupyterhub"
 c.JupyterHub.hub_port = 8080
 
 # Persist hub data on volume mounted inside container
@@ -65,7 +65,9 @@ c.Authenticator.enable_auth_state = True
 # c.GenericOAuthenticator.scope = ["openid"]
 
 # Authenticate users with EODHAuthenticator
-c.JupyterHub.authenticator_class = "eodh_jpy.auth.EODHAuthenticator"
+import re
+
+c.JupyterHub.authenticator_class = "eodh_jpyauth.EODHAuthenticator"
 c.EODHAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
 c.EODHAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
 c.EODHAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
@@ -79,3 +81,6 @@ c.EODHAuthenticator.scope = ["openid"]
 c.EODHAuthenticator.enable_logout = True
 c.EODHAuthenticator.oauth_logout_url = os.environ["OAUTH_LOGOUT_URL"]
 c.EODHAuthenticator.oauth_logout_redirect_uri = os.environ["OAUTH_LOGOUT_REDIRECT_URI"]
+c.EODHAuthenticator.workspace_pattern = re.compile(
+    rf"^(?P<workspace>[^.]+)\.{os.environ['PLATFORM_DOMAIN']}$"
+)

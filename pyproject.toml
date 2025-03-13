@@ -1,5 +1,5 @@
 [project]
-name = "eodh-jpy"
+name = "eodh-jpyauth"
 version = "0.1.0"
 description = "A JupyterHub OIDC authenticator for Keycloak"
 readme = "README.md"

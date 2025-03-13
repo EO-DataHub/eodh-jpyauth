@@ -7,7 +7,7 @@ services:
         JUPYTERHUB_VERSION: latest
     restart: always
     image: jupyterhub
-    container_name: jupyterhub
+    container_name: workspace1.jupyterhub
     networks:
       - jupyterhub-network
     volumes:
@@ -22,11 +22,12 @@ services:
       DOCKER_NETWORK_NAME: jupyterhub-network
       DOCKER_NOTEBOOK_IMAGE: quay.io/jupyter/base-notebook:latest
       DOCKER_NOTEBOOK_DIR: /home/jovyan
+      PLATFORM_DOMAIN: jupyterhub:8060
       OAUTH_CLIENT_ID: client
       OAUTH_CLIENT_SECRET: e3rjr7sz9NVuAtRsg74XJUrEWG408o7W
       OAUTH_AUTHORIZE_URL: http://keycloak:8080/realms/test/protocol/openid-connect/auth
       OAUTH_TOKEN_URL: http://keycloak:8080/realms/test/protocol/openid-connect/token
-      OAUTH_CALLBACK_URL: http://jupyterhub:8060/hub/oauth_callback
+      OAUTH_CALLBACK_URL: http://{workspace}.jupyterhub:8060/hub/oauth_callback
       OAUTH_USERDATA_URL: http://keycloak:8080/realms/test/protocol/openid-connect/userinfo
       OAUTH_USERNAME_CLAIM: preferred_username
       OAUTH_LOGOUT_URL: http://keycloak:8080/realms/test/protocol/openid-connect/logout
@@ -36,10 +37,8 @@ services:
     command:
       - start-dev
       - --import-realm
-      - --features
-      - dynamic-scopes:v1,token-exchange:v1
-      - --spi-oauth2-token-exchange-provider
-      - scope-enhanced-token-exchange
+      - --features=dynamic-scopes:v1,token-exchange:v1
+      - --spi-oauth2-token-exchange-provider=scope-enhanced-token-exchange
     container_name: keycloak
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin

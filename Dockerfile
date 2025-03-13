@@ -7,7 +7,7 @@ RUN python3 -m pip install --no-cache-dir \
     jupyterhub-nativeauthenticator
 
 WORKDIR /app
-COPY src/jyk_auth .
-RUN pip3 install -r jyk_auth
+COPY src/eodh_jpyauth .
+RUN pip3 install -r eodh_jpyauth
 
 CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
