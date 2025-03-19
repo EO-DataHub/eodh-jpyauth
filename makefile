@@ -19,3 +19,11 @@ stop-dev:
 destroy-dev:
 	cd test && \
 	$(docker) compose rm -fsv
+
+.PHONY: build
+build:
+	uv build
+
+.PHONY: publish
+publish: build
+	uv publish --token $(token)
