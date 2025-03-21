@@ -6,10 +6,27 @@ from traitlets import Unicode
 class EODHSpawner(KubeSpawner):
     workspace = Unicode(
         None,
-        allow_none=False,
         config=True,
         help="The workspace of the notebook",
     )
+    public_url_pattern = Unicode(
+        None,
+        allow_none=False,
+        config=True,
+        help="The URL pattern for the public URL",
+    )
+
+    def start(self):
+        self.log.info("Detecting workspace...")
+        if "workspace" not in self.user_options:
+            self.log.info(
+                "No workspace detected in user options. Aborting notebook launch."
+            )
+            raise NoWorkspaceSet("No workspace detected in user options.")
+        self.workspace = self.user_options["workspace"]
+        self.log.info(f"Workspace detected: {self.workspace}")
+        self.public_url = self._expand_user_properties(self.public_url_pattern)
+        return super().start()
 
     def _expand_user_properties(self, template, slug_scheme=None):
         """
@@ -27,3 +44,7 @@ class EODHSpawner(KubeSpawner):
         for attr_name in ("pod_name", "pvc_name", "namespace"):
             ns[attr_name] = getattr(self, attr_name, f"{attr_name}_unavailable!")
         return template.format(**ns)
+
+
+class NoWorkspaceSet(Exception):
+    pass
