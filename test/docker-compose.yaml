@@ -7,7 +7,7 @@ services:
         JUPYTERHUB_VERSION: latest
     restart: always
     image: jupyterhub
-    container_name: workspace1.jupyterhub
+    container_name: jupyterhub
     networks:
       - jupyterhub-network
     volumes:
@@ -27,13 +27,13 @@ services:
       OAUTH_CLIENT_SECRET: e3rjr7sz9NVuAtRsg74XJUrEWG408o7W
       OAUTH_AUTHORIZE_URL: http://keycloak:8080/realms/test/protocol/openid-connect/auth
       OAUTH_TOKEN_URL: http://keycloak:8080/realms/test/protocol/openid-connect/token
-      OAUTH_CALLBACK_URL: http://{workspace}.jupyterhub:8060/hub/oauth_callback
+      OAUTH_CALLBACK_URL: http://jupyterhub:8060/hub/oauth_callback
       OAUTH_USERDATA_URL: http://keycloak:8080/realms/test/protocol/openid-connect/userinfo
       OAUTH_USERNAME_CLAIM: preferred_username
       OAUTH_LOGOUT_URL: http://keycloak:8080/realms/test/protocol/openid-connect/logout
       OAUTH_LOGOUT_REDIRECT_URI: http://jupyterhub:8060
   keycloak:
-    image: public.ecr.aws/eodh/eodh-keycloak:26.0.4-0.2.3.1
+    image: public.ecr.aws/eodh/eodh-keycloak:26.0.4-0.2.5
     command:
       - start-dev
       - --import-realm

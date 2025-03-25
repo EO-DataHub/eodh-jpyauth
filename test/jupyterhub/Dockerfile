@@ -6,5 +6,6 @@ RUN python3 -m pip install --no-cache-dir \
 COPY src/eodh_jpyauth /app/eodh_jpyauth
 COPY pyproject.toml README.md /app
 RUN pip3 install -e /app
+COPY test/jupyterhub/templates /app/templates
 
 CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]

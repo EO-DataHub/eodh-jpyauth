@@ -49,16 +49,11 @@ async def get_workspaces(request: Request):
         logging.error("user %s forbidden", user)
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    return {
-        "success": 1,
-        "data": {
-            "workspaces": [
-                {
-                    "name": "workspace1",
-                },
-                {
-                    "name": "workspace2",
-                },
-            ]
+    return [
+        {
+            "name": "workspace1",
         },
-    }
+        {
+            "name": "workspace2",
+        },
+    ]

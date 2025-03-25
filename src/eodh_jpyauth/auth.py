@@ -1,6 +1,5 @@
 from oauthenticator.oauth2 import OAuthenticator, OAuthLogoutHandler
-from tornado.web import RequestHandler
-from traitlets import Bool, CRegExp, Unicode
+from traitlets import Bool, Unicode
 
 
 class EODHLogoutHandler(OAuthLogoutHandler):
@@ -27,31 +26,19 @@ class EODHAuthenticator(OAuthenticator):
     enable_logout = Bool(False, config=True)
     oauth_logout_url = Unicode(config=True)
     oauth_logout_redirect_uri = Unicode(config=True)
-    workspace_pattern = CRegExp(config=True)
 
     logout_handler = EODHLogoutHandler
 
-    def get_workspace(self, host: str) -> str | None:
+    def build_auth_state_dict(self, token_info, user_info):
         """
-        Use authenticator configured compiled regex to extract workspaces from the
-        login request host.
+        Add workspaces claim to auth_state if present in user_info.
         """
-        self.log.info("host %s", host)
-        matches = self.workspace_pattern.match(host)
-        if matches:
-            return matches.group("workspace")
+        auth_state = super().build_auth_state_dict(token_info, user_info)
+        if "workspaces" in user_info:
+            auth_state["workspaces"] = user_info["workspaces"]
+            self.log.info(
+                "Workspaces added to auth_state: %s", auth_state["workspaces"]
+            )
         else:
-            return None
-
-    def get_callback_url(self, handler: RequestHandler = None) -> str:
-        """
-        Get my OAuth redirect URL
-
-        Check if the callback_url has a {workspace} placeholder and replace it with the
-        workspace extracted from the handler's request host.
-
-        Otherwise pass through to superclass.
-        """
-        if handler and "{host}" in self.oauth_callback_url:
-            return self.oauth_callback_url.format(host=handler.request.host)
-        return super().get_callback_url(handler)
+            self.log.warning("No workspaces claim in user token info")
+        return auth_state

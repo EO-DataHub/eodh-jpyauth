@@ -39,7 +39,7 @@ c.DockerSpawner.remove = True
 c.DockerSpawner.debug = True
 
 # User containers will access hub by container name on the Docker network
-c.JupyterHub.hub_ip = "workspace1.jupyterhub"
+c.JupyterHub.hub_ip = "jupyterhub"
 c.JupyterHub.hub_port = 8080
 
 # Persist hub data on volume mounted inside container
@@ -51,23 +51,12 @@ c.Authenticator.allow_all = True
 c.Authenticator.auto_login = True
 c.Authenticator.enable_auth_state = True
 
-# Authenticate users with GenericOAuthenticator
-# c.JupyterHub.authenticator_class = "oauthenticator.generic.GenericOAuthenticator"
-# c.GenericOAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
-# c.GenericOAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
-# c.GenericOAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
-# c.GenericOAuthenticator.token_url = os.environ["OAUTH_TOKEN_URL"]
-# c.GenericOAuthenticator.oauth_callback_url = os.environ["OAUTH_CALLBACK_URL"]
-# c.GenericOAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
-# c.GenericOAuthenticator.username_key = os.environ.get(
-#     "OAUTH_USERNAME_KEY", "preferred_username"
-# )
-# c.GenericOAuthenticator.scope = ["openid"]
+print("Configuring JupyterHub...")
+c.JupyterHub.authenticator_class = "eodh_jpyauth.auth.EODHAuthenticator"
+c.JupyterHub.allow_named_servers = True
+c.JupyterHub.template_paths = ["/app/templates"]
 
-# Authenticate users with EODHAuthenticator
-import re
-
-c.JupyterHub.authenticator_class = "eodh_jpyauth.EODHAuthenticator"
+print("Configuring EODH Authenticator...")
 c.EODHAuthenticator.client_id = os.environ["OAUTH_CLIENT_ID"]
 c.EODHAuthenticator.client_secret = os.environ["OAUTH_CLIENT_SECRET"]
 c.EODHAuthenticator.authorize_url = os.environ["OAUTH_AUTHORIZE_URL"]
@@ -77,10 +66,14 @@ c.EODHAuthenticator.userdata_url = os.environ["OAUTH_USERDATA_URL"]
 c.EODHAuthenticator.username_claim = os.environ.get(
     "OAUTH_USERNAME_CLAIM", "preferred_username"
 )
-c.EODHAuthenticator.scope = ["openid"]
+c.EODHAuthenticator.scope = ["openid workspaces"]
 c.EODHAuthenticator.enable_logout = True
 c.EODHAuthenticator.oauth_logout_url = os.environ["OAUTH_LOGOUT_URL"]
 c.EODHAuthenticator.oauth_logout_redirect_uri = os.environ["OAUTH_LOGOUT_REDIRECT_URI"]
-c.EODHAuthenticator.workspace_pattern = re.compile(
-    rf"^(?P<workspace>[^.]+)\.{os.environ['PLATFORM_DOMAIN']}$"
-)
+
+print("Configuring DockerSpawner...")
+c.DockerSpawner.allowed_images = {
+    "EO DataHub": "public.ecr.aws/eodh/eodh-default-notebook",
+    "Python 3.12": "quay.io/jupyter/base-notebook:python-3.12",
+    "R 4.4": "quay.io/jupyter/r-notebook:r-4.4.2",
+}

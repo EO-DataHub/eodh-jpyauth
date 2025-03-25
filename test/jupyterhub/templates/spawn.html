@@ -1,0 +1,79 @@
+{% extends "page.html" %} {% if announcement_spawn is string %} {% set
+announcement = announcement_spawn %} {% endif %} {% block main %}
+<div class="container">
+  {% block heading %}
+  <div class="row text-center">
+    <h1>UK EO DataHub Options</h1>
+  </div>
+  {% endblock heading %}
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      {% if for_user and user.name != for_user.name -%}
+      <p>Spawning server for {{ for_user.name }}</p>
+      {% endif -%} {% if error_message -%}
+      <p class="spawn-error-msg alert alert-danger">
+        Error: {{ error_message }}
+      </p>
+      {% endif %}
+      <form
+        enctype="multipart/form-data"
+        id="spawn_form"
+        action="{{ url | safe }}"
+        method="post"
+        role="form"
+      >
+        {% if auth_state and auth_state.workspaces %}
+        <label for="workspace">Select a workspace:</label>
+        <select class="form-control" name="workspace" required autofocus>
+          {% for workspace in auth_state.workspaces %}
+          <option value="{{ workspace }}">{{ workspace }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        {{ spawner_options_form | safe }}
+        <br />
+        <div class="feedback-container">
+          <button
+            type="submit"
+            class="btn btn-jupyter form-control"
+            {%
+            if
+            not
+            (auth_state
+            and
+            auth_state.workspaces)
+            %}disabled{%
+            endif
+            %}
+          >
+            Start
+          </button>
+          <div class="feedback-widget hidden">
+            <i class="fa fa-spinner"></i>
+          </div>
+        </div>
+        {% else %}
+        <h2 class="text-center">No workspaces available.</h2>
+        <br />
+        <p>You need a workspace before you can start a notebook.</p>
+        <br />
+        <p>
+          Please ensure you have the workspaces OIDC claim in your token, and
+          that it contains at least one workspace.
+        </p>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock main %} {% block script %} {{ super() }}
+<script>
+  // setup onSubmit feedback
+  $("form").submit((e) => {
+    var form = $(e.target);
+    form.find(".feedback-container>input").attr("disabled", true);
+    form.find(".feedback-container>*").toggleClass("hidden");
+    form.find(".feedback-widget>*").toggleClass("fa-pulse");
+  });
+</script>
+{% endblock script %}

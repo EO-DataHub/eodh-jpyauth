@@ -1,6 +1,6 @@
 [project]
 name = "eodh-jpyauth"
-version = "0.1.1rc7"
+version = "0.1.1rc24"
 description = "A JupyterHub OIDC authenticator for Keycloak"
 readme = "README.md"
 authors = [
@@ -18,5 +18,6 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "dockerspawner>=14.0.0",
     "ruff>=0.9.7",
 ]
