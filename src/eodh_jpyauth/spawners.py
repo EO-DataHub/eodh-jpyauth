@@ -32,8 +32,12 @@ class KubeSpawner(KubeSpawner_):
                 pvc_name=self._expand_user_properties(self.pvc_name_template),
             )
             if self.public_url_pattern:
-                # only override public_url if the pattern is set
+                # if public_url_pattern is set, override public_url and proxy_spec so
+                # that user notebook is available on specified subdomain
                 overrides["public_url"] = self._expand_user_properties(
+                    self.public_url_pattern
+                )
+                overrides["proxy_spec"] = self._expand_user_properties(
                     self.public_url_pattern
                 )
             self._apply_overrides(spawner_override=overrides)
