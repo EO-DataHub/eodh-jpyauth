@@ -1,4 +1,4 @@
-from collections import OrderedDict
+import json
 
 from kubespawner.slugs import safe_slug
 from kubespawner.spawner import KubeSpawner as KubeSpawner_
@@ -12,34 +12,19 @@ class KubeSpawner(KubeSpawner_):
         config=True,
         help="The workspace the spawner should launch in",
     )
-    public_url_pattern = Unicode(
-        None,
-        allow_none=True,
-        config=True,
-        help="The URL pattern for the public URL",
-    )
 
     async def load_user_options(self):
         """
         Apply the workspace from the user options, if present, and apply all overrides
-        that support workspace template parameter
+        that support workspace template parameter.
         """
         if "workspace" in self.user_options:
             self.workspace = self.user_options["workspace"]
-            overrides = OrderedDict(
+            overrides = dict(
                 namespace=self._expand_user_properties(self.user_namespace_template),
                 pod_name=self._expand_user_properties(self.pod_name_template),
                 pvc_name=self._expand_user_properties(self.pvc_name_template),
             )
-            if self.public_url_pattern:
-                # if public_url_pattern is set, override public_url and proxy_spec so
-                # that user notebook is available on specified subdomain
-                overrides["public_url"] = self._expand_user_properties(
-                    self.public_url_pattern
-                )
-                overrides["proxy_spec"] = self._expand_user_properties(
-                    self.public_url_pattern
-                )
             self._apply_overrides(spawner_override=overrides)
 
         await super().load_user_options()

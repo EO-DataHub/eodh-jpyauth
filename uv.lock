@@ -368,11 +368,12 @@ wheels = [
 
 [[package]]
 name = "eodh-jpyauth"
-version = "0.1.1rc8"
+version = "0.1.1rc33"
 source = { editable = "." }
 dependencies = [
     { name = "jupyterhub-kubespawner" },
     { name = "oauthenticator" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -385,6 +386,7 @@ dev = [
 requires-dist = [
     { name = "jupyterhub-kubespawner", specifier = ">=7.0.0" },
     { name = "oauthenticator", specifier = ">=17.3.0" },
+    { name = "requests", specifier = ">=2.32.3" },
 ]
 
 [package.metadata.requires-dev]
