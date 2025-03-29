@@ -1,5 +1,3 @@
-import json
-
 from kubespawner.slugs import safe_slug
 from kubespawner.spawner import KubeSpawner as KubeSpawner_
 from traitlets import Unicode
