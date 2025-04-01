@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import TypedDict
 
 from oauthenticator.oauth2 import OAuthenticator, OAuthLogoutHandler
@@ -45,10 +46,17 @@ class EODHAuthenticator(OAuthenticator):
         """
         auth_state = super().build_auth_state_dict(token_info, user_info)
         if "workspaces" in user_info:
+            if not isinstance(user_info["workspaces"], Iterable):
+                raise ValueError(
+                    "Workspaces claim in user_info should be iterable. It is %s",
+                    type(user_info["workspaces"]),
+                )
             auth_state["workspaces"] = sorted(user_info["workspaces"])
             self.log.info(
                 "Workspaces added to auth_state: %s", auth_state["workspaces"]
             )
         else:
-            self.log.warning("No workspaces claim in user token info")
+            self.log.warning(
+                "No workspaces claim in user '%s' token info", self.user.name
+            )
         return auth_state
