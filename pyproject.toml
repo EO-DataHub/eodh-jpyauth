@@ -1,17 +1,23 @@
 [project]
-name = "jupyter-keycloak-authenticator"
-version = "0.1.0"
+name = "eodh-jpyauth"
+version = "0.1.2"
 description = "A JupyterHub OIDC authenticator for Keycloak"
 readme = "README.md"
 authors = [
     { name = "Steven Gillies", email = "steven.gillies@telespazio.com" }
 ]
 requires-python = ">=3.10"
-dependencies = []
-
-[project.scripts]
-jupyter-keycloak-authenticator = "jupyter_keycloak_authenticator:main"
+dependencies = [
+    "jupyterhub-kubespawner>=7.0.0",
+    "oauthenticator>=17.3.0",
+]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "dockerspawner>=14.0.0",
+    "ruff>=0.9.7",
+]
