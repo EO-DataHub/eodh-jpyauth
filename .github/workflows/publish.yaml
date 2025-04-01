@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build distribution 📦
-    runs-on: &runs-on self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,7 +35,7 @@ jobs:
       Publish Python 🐍 distribution 📦 to PyPI
     needs:
       - build
-    runs-on: *runs-on
+    runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/p/eodh-jpyauth
@@ -55,7 +55,7 @@ jobs:
       and upload them to GitHub Release
     needs:
       - publish-to-pypi
-    runs-on: *runs-on
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
