@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from typing import TypedDict
 
+import jwt
 from oauthenticator.oauth2 import OAuthenticator, OAuthLogoutHandler
 from traitlets import Bool, Unicode
 
@@ -45,18 +46,33 @@ class EODHAuthenticator(OAuthenticator):
         Add workspaces claim to auth_state if present in user_info.
         """
         auth_state = super().build_auth_state_dict(token_info, user_info)
-        if "workspaces" in user_info:
-            if not isinstance(user_info["workspaces"], Iterable):
+
+        # Decode claims from user OIDC access token
+        try:
+            claims = jwt.decode(
+                token_info["access_token"], options={"verify_signature": False}
+            )
+        except KeyError as exc:
+            self.log.error("No access_token in token_info: %r", exc)
+            raise
+        except jwt.exceptions.DecodeError as exc:
+            self.log.error("Failed to decode token: %r", exc)
+            raise
+
+        # Use workspaces claim to populate auth_state
+        if workspaces := claims.get("workspaces", None):
+            if not isinstance(workspaces, Iterable):
                 raise ValueError(
                     "Workspaces claim in user_info should be iterable. It is %s",
-                    type(user_info["workspaces"]),
+                    type(workspaces),
                 )
-            auth_state["workspaces"] = sorted(user_info["workspaces"])
+            auth_state["workspaces"] = sorted(workspaces)
             self.log.info(
                 "Workspaces added to auth_state: %s", auth_state["workspaces"]
             )
         else:
             self.log.warning(
-                "No workspaces claim in user '%s' token info", self.user.name
+                "No workspaces claim in user '%s' token info",
+                user_info[self.username_claim],
             )
         return auth_state

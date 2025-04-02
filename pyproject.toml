@@ -1,6 +1,6 @@
 [project]
 name = "eodh-jpyauth"
-version = "0.1.2"
+version = "0.1.3"
 description = "A JupyterHub OIDC authenticator for Keycloak"
 readme = "README.md"
 authors = [
