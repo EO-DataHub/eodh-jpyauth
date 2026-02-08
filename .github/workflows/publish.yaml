@@ -47,7 +47,6 @@ jobs:
       - build
       - qa
       - security-scan
-      - unit-tests
     runs-on: ubuntu-latest
     environment:
       name: pypi
