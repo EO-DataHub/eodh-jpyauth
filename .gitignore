@@ -2,3 +2,23 @@
 !example.env
 
 dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environments
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Pre-commit (fetched dynamically)
+.pre-commit-config.yaml
+
+# Caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/

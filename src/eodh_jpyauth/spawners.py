@@ -1,6 +1,11 @@
+from typing import TYPE_CHECKING, Any
+
 from kubespawner.slugs import safe_slug
 from kubespawner.spawner import KubeSpawner as KubeSpawner_
 from traitlets import Unicode
+
+if TYPE_CHECKING:
+    pass
 
 
 class KubeSpawner(KubeSpawner_):
@@ -11,7 +16,7 @@ class KubeSpawner(KubeSpawner_):
         help="The workspace the spawner should launch in",
     )
 
-    async def load_user_options(self):
+    async def load_user_options(self) -> None:
         """
         Apply the workspace from the user options, if present, and apply all overrides
         that support workspace template parameter.
@@ -27,7 +32,7 @@ class KubeSpawner(KubeSpawner_):
 
         await super().load_user_options()
 
-    def get_state(self):
+    def get_state(self) -> dict[str, Any]:
         """
         Add workspace to the state
         """
@@ -35,7 +40,7 @@ class KubeSpawner(KubeSpawner_):
         state["workspace"] = self.workspace
         return state
 
-    def get_env(self):
+    def get_env(self) -> dict[str, Any]:
         """
         Add workspace to the environment
         """
@@ -43,37 +48,33 @@ class KubeSpawner(KubeSpawner_):
         env["WORKSPACE"] = self.workspace
         return env
 
-    def load_state(self, state):
+    def load_state(self, state: dict[str, Any]) -> None:
         """
         Load workspace from state
         """
         super().load_state(state)
-        self.workspace = state.get("workspace", None)
+        self.workspace = state.get("workspace")
 
-    def _options_from_form(self, formdata: dict):
+    def _options_from_form(self, formdata: dict[str, Any]) -> dict[str, Any]:
         """
         Add workspace to the user options from the form then call super method and
         return the merged options
         """
         user_options = dict(workspace=formdata.pop("workspace", [None])[0])
         if user_options["workspace"]:
-            self.log.debug(
-                "Found workspace '%s' in form data", user_options["workspace"]
-            )
+            self.log.debug("Found workspace '%s' in form data", user_options["workspace"])
         # Merge with the user options from the form
         user_options |= super()._options_from_form(formdata)
         return user_options
 
-    def _expand_user_properties(self, template, slug_scheme=None):
+    def _expand_user_properties(self, template: str, slug_scheme: str | None = None) -> str:
         """
         Expand user properties in template strings
         """
-        safe_username = safe_slug(self.user.name)
+        safe_username = safe_slug(self.user.name)  # type: ignore
         safe_workspace = safe_slug(self.workspace or "")
         safe_servername = safe_slug(self.name or "")
-        safe_userserver = (
-            f"{safe_username}--{safe_servername}" if safe_servername else safe_username
-        )
+        safe_userserver = f"{safe_username}--{safe_servername}" if safe_servername else safe_username
         ns = dict(
             username=safe_username,
             workspace=safe_workspace,

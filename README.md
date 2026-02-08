@@ -4,6 +4,12 @@ Custom JupyterHub classes to integrate JupyterHub with the UK EO DataHub.
 
 Contains an EODHAuthenticator class to authenticate with the UK EO DataHub, as well as a custom KubeSpawner class to manage workspace scopes.
 
+## Development Setup
+
+```bash
+make setup
+```
+
 ## Build
 
 ```bash
@@ -14,4 +20,11 @@ make build
 
 ```bash
 make publish token=$PYPI_TOKEN
+```
+
+## Quality Checks
+
+```bash
+make check    # Run ruff, pyright, validate-pyproject
+make format   # Auto-format code
 ```

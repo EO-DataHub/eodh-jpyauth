@@ -6,7 +6,10 @@ readme = "README.md"
 authors = [
     { name = "Steven Gillies", email = "steven.gillies@telespazio.com" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.13,<3.14"
+classifiers = [
+    "Programming Language :: Python :: 3.13",
+]
 dependencies = [
     "jupyterhub-kubespawner>=7.0.0",
     "oauthenticator>=17.3.0",
@@ -19,5 +22,46 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "dockerspawner>=14.0.0",
-    "ruff>=0.9.7",
+    "pre-commit",
+    "pyright",
+    "pytest",
+    "pytest-mock",
+    "pytest-watcher",
+    "pytest-xdist",
+    "ruff",
+    "validate-pyproject",
+]
+
+[tool.uv]
+package = true
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+
+[tool.ruff]
+line-length = 119
+
+[tool.ruff.lint]
+select = [
+    "E",    # Pycodestyle errors
+    "W",    # Pycodestyle warnings
+    "F",    # Pyflakes
+    "I",    # isort
+    "FAST", # FastAPI
+    "RUF",  # RUF-specific rules
+    "SIM",  # Simplifications
+    "B",    # Bugbear
+    "ANN",  # Annotations
+    "PLC",  # Pylint convention
+    "PLE",  # Pylint errors
+    "UP",   # pyupgrade
+    "FURB", # refurb
+    "PT",   # pytest
+]
+ignore = [
+    "E501",   # line too long
+    "SIM108", # ternary operator
+    "SIM103", # return bool directly
+    "B008",   # function call in default argument (incompatible with FastAPI)
+    "ANN401", # dynamically typed expressions (Any) are disallowed
 ]
