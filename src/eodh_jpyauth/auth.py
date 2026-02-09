@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from typing import TypedDict
+from typing import Any, TypedDict
 
 import jwt
 from oauthenticator.oauth2 import OAuthenticator, OAuthLogoutHandler
@@ -17,17 +17,16 @@ class TokenInfo(TypedDict):
 class EODHLogoutHandler(OAuthLogoutHandler):
     """Log a user out by clearing both their JupyterHub login cookie and SSO cookie."""
 
-    async def get(self):
+    async def get(self) -> None:
         self.log.info("EODH Logout")
+        assert self.authenticator is not None
         if self.authenticator.enable_logout:
             await self.default_handle_logout()
             await self.handle_logout()
 
             redirect_url = self.authenticator.oauth_logout_url
             if self.authenticator.oauth_logout_redirect_uri:
-                redirect_url += (
-                    f"?redirect_uri={self.authenticator.oauth_logout_redirect_uri}"
-                )
+                redirect_url += f"?redirect_uri={self.authenticator.oauth_logout_redirect_uri}"
 
             self.redirect(redirect_url)
         else:
@@ -41,7 +40,7 @@ class EODHAuthenticator(OAuthenticator):
 
     logout_handler = EODHLogoutHandler
 
-    def build_auth_state_dict(self, token_info, user_info):
+    def build_auth_state_dict(self, token_info: Any, user_info: Any) -> dict[str, Any]:
         """
         Add workspaces claim to auth_state if present in user_info.
         """
@@ -49,9 +48,7 @@ class EODHAuthenticator(OAuthenticator):
 
         # Decode claims from user OIDC access token
         try:
-            claims = jwt.decode(
-                token_info["access_token"], options={"verify_signature": False}
-            )
+            claims = jwt.decode(token_info["access_token"], options={"verify_signature": False})
         except KeyError as exc:
             self.log.error("No access_token in token_info: %r", exc)
             raise
@@ -67,9 +64,7 @@ class EODHAuthenticator(OAuthenticator):
                     type(workspaces),
                 )
             auth_state["workspaces"] = sorted(workspaces)
-            self.log.info(
-                "Workspaces added to auth_state: %s", auth_state["workspaces"]
-            )
+            self.log.info("Workspaces added to auth_state: %s", auth_state["workspaces"])
         else:
             self.log.warning(
                 "No workspaces claim in user '%s' token info",
