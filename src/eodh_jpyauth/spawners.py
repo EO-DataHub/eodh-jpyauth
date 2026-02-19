@@ -73,11 +73,13 @@ class KubeSpawner(KubeSpawner_):
         """
         safe_username = safe_slug(self.user.name)  # type: ignore
         safe_workspace = safe_slug(self.workspace or "")
+        raw_workspace = self.workspace or ""
         safe_servername = safe_slug(self.name or "")
         safe_userserver = f"{safe_username}--{safe_servername}" if safe_servername else safe_username
         ns = dict(
             username=safe_username,
             workspace=safe_workspace,
+            unescaped_workspace=raw_workspace,
             servername=safe_servername,
             user_server=safe_userserver,
         )
