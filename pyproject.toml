@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Steven Gillies", email = "steven.gillies@telespazio.com" }
 ]
-requires-python = ">=3.13,<3.14"
+requires-python = ">=3.12,<3.14"
 classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
