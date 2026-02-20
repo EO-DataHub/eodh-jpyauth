@@ -1,7 +1,7 @@
 import string
 from typing import TYPE_CHECKING, Any
 
-from kubespawner.slugs import safe_slug, _is_valid_general, _alphanum_lower, _object_pattern
+from kubespawner.slugs import _alphanum_lower, _is_valid_general, _object_pattern, safe_slug
 from kubespawner.spawner import KubeSpawner as KubeSpawner_
 from traitlets import Unicode
 
