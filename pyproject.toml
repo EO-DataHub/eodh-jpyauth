@@ -11,6 +11,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
+    "cryptography>=46.0.5",  # CVE-2026-26007
     "jupyterhub-kubespawner>=7.0.0",
     "oauthenticator>=17.3.0",
 ]
