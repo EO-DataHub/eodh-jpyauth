@@ -1,11 +1,32 @@
+import string
 from typing import TYPE_CHECKING, Any
 
-from kubespawner.slugs import safe_slug
+from kubespawner.slugs import _alphanum_lower, _is_valid_general, _object_pattern, safe_slug
 from kubespawner.spawner import KubeSpawner as KubeSpawner_
 from traitlets import Unicode
 
 if TYPE_CHECKING:
     pass
+
+_alpha_lower_or_digit = tuple(string.ascii_lowercase + string.digits)
+
+
+def _is_valid_eodh_workspace_name(workspace: str) -> bool:
+    """
+    Validate workspace name:
+        - 1 to 60 chars
+        - starts with [a-z0-9]
+        - ends with [a-z0-9]
+        - alphanumeric + hyphens
+    """
+    return _is_valid_general(
+        workspace,
+        starts_with=_alpha_lower_or_digit,
+        ends_with=_alphanum_lower,
+        pattern=_object_pattern,
+        max_length=60,  # Kubernetes namespace max length is 63 but we are prepending 'ws-'
+        min_length=1,
+    )
 
 
 class KubeSpawner(KubeSpawner_):
@@ -73,11 +94,13 @@ class KubeSpawner(KubeSpawner_):
         """
         safe_username = safe_slug(self.user.name)  # type: ignore
         safe_workspace = safe_slug(self.workspace or "")
+        eodh_safe_workspace = safe_slug(self.workspace or "", is_valid=_is_valid_eodh_workspace_name)
         safe_servername = safe_slug(self.name or "")
         safe_userserver = f"{safe_username}--{safe_servername}" if safe_servername else safe_username
         ns = dict(
             username=safe_username,
             workspace=safe_workspace,
+            eodh_safe_workspace=eodh_safe_workspace,
             servername=safe_servername,
             user_server=safe_userserver,
         )
