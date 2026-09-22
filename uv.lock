@@ -319,6 +319,7 @@ dependencies = [
     { name = "cryptography" },
     { name = "jupyterhub-kubespawner" },
     { name = "oauthenticator" },
+    { name = "pyjwt" },
 ]
 
 [package.dev-dependencies]
@@ -339,6 +340,7 @@ requires-dist = [
     { name = "cryptography", specifier = ">=46.0.5" },
     { name = "jupyterhub-kubespawner", specifier = ">=7.0.0" },
     { name = "oauthenticator", specifier = ">=17.3.0" },
+    { name = "pyjwt", specifier = ">=2.10.1" },
 ]
 
 [package.metadata.requires-dev]

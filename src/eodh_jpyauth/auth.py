@@ -1,9 +1,10 @@
 from collections.abc import Iterable
+from functools import cached_property
 from typing import Any, TypedDict
 
 import jwt
 from oauthenticator.oauth2 import OAuthenticator, OAuthLogoutHandler
-from traitlets import Bool, Unicode
+from traitlets import Bool, List, Unicode, default
 
 
 class TokenInfo(TypedDict):
@@ -38,7 +39,26 @@ class EODHAuthenticator(OAuthenticator):
     oauth_logout_url = Unicode(config=True)
     oauth_logout_redirect_uri = Unicode(config=True)
 
+    jwks_url = Unicode(
+        config=True,
+        help="URL of the JWKS endpoint used to verify the access token's signature.",
+    )
+    jwt_audience = List(
+        Unicode(),
+        config=True,
+        default_value=["eodh-workspaces"],
+        help="Acceptable 'aud' values for the access token.",
+    )
+
     logout_handler = EODHLogoutHandler
+
+    @default("jwks_url")
+    def _jwks_url_default(self) -> str:
+        return self.token_url.rsplit("/", 1)[0] + "/certs"
+
+    @cached_property
+    def _jwks_client(self) -> jwt.PyJWKClient:
+        return jwt.PyJWKClient(self.jwks_url)
 
     def build_auth_state_dict(self, token_info: Any, user_info: Any) -> dict[str, Any]:
         """
@@ -46,19 +66,27 @@ class EODHAuthenticator(OAuthenticator):
         """
         auth_state = super().build_auth_state_dict(token_info, user_info)
 
-        # Decode claims from user OIDC access token
+        # Decode and verify claims from user OIDC access token
         try:
-            claims = jwt.decode(token_info["access_token"], options={"verify_signature": False})
+            access_token = token_info["access_token"]
         except KeyError as exc:
             self.log.error("No access_token in token_info: %r", exc)
             raise
-        except jwt.exceptions.DecodeError as exc:
-            self.log.error("Failed to decode token: %r", exc)
+        try:
+            signing_key = self._jwks_client.get_signing_key_from_jwt(access_token)
+            claims = jwt.decode(
+                access_token,
+                signing_key.key,
+                audience=self.jwt_audience,
+                algorithms=["RS256"],
+            )
+        except jwt.PyJWTError as exc:
+            self.log.error("Failed to verify token: %r", exc)
             raise
 
         # Use workspaces claim to populate auth_state
         if workspaces := claims.get("workspaces", None):
-            if not isinstance(workspaces, Iterable):
+            if isinstance(workspaces, (str, bytes)) or not isinstance(workspaces, Iterable):
                 raise ValueError(
                     "Workspaces claim in user_info should be iterable. It is %s",
                     type(workspaces),
