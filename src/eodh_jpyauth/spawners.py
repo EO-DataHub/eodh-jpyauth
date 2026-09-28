@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from kubespawner.slugs import _alphanum_lower, _is_valid_general, _object_pattern, safe_slug
 from kubespawner.spawner import KubeSpawner as KubeSpawner_
+from tornado.web import HTTPError
 from traitlets import Unicode
 
 if TYPE_CHECKING:
@@ -42,8 +43,19 @@ class KubeSpawner(KubeSpawner_):
         Apply the workspace from the user options, if present, and apply all overrides
         that support workspace template parameter.
         """
-        if "workspace" in self.user_options:
-            self.workspace = self.user_options["workspace"]
+        requested_workspace = self.user_options.get("workspace")
+        if requested_workspace:
+            auth_state = await self.user.get_auth_state() or {}  # type: ignore
+            allowed_workspaces = auth_state.get("workspaces") or []
+            if requested_workspace not in allowed_workspaces:
+                self.log.warning(
+                    "User '%s' requested workspace '%s' which is not in their authorised workspaces %s",
+                    self.user.name,  # type: ignore
+                    requested_workspace,
+                    allowed_workspaces,
+                )
+                raise HTTPError(403, f"Not authorised for workspace '{requested_workspace}'")
+            self.workspace = requested_workspace
             overrides = dict(
                 namespace=self._expand_user_properties(self.user_namespace_template),
                 pod_name=self._expand_user_properties(self.pod_name_template),
