@@ -9,6 +9,7 @@ There is no private key for the real Keycloak instance, so these sign with a thr
 keypair and stub out the authenticator's JWKS client rather than calling the real endpoint.
 """
 
+import time
 import types
 
 import jwt
@@ -78,6 +79,23 @@ def test_the_wrong_audience_is_rejected() -> None:
     token_info = {"access_token": _access_token(PRIVATE_KEY, aud="some-other-client", workspaces=["ws-a"])}
 
     with pytest.raises(jwt.PyJWTError):
+        authenticator.build_auth_state_dict(token_info, {})
+
+
+def test_a_token_expired_within_the_clock_skew_leeway_is_accepted() -> None:
+    authenticator = _authenticator()
+    token_info = {"access_token": _access_token(PRIVATE_KEY, exp=int(time.time()) - 10, workspaces=["ws-a"])}
+
+    auth_state = authenticator.build_auth_state_dict(token_info, {})
+
+    assert auth_state["workspaces"] == ["ws-a"]
+
+
+def test_a_token_expired_beyond_the_clock_skew_leeway_is_rejected() -> None:
+    authenticator = _authenticator()
+    token_info = {"access_token": _access_token(PRIVATE_KEY, exp=int(time.time()) - 60, workspaces=["ws-a"])}
+
+    with pytest.raises(jwt.ExpiredSignatureError):
         authenticator.build_auth_state_dict(token_info, {})
 
 

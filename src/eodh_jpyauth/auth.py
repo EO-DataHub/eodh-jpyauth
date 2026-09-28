@@ -79,6 +79,8 @@ class EODHAuthenticator(OAuthenticator):
                 signing_key.key,
                 audience=self.jwt_audience,
                 algorithms=["RS256"],
+                # Tolerate clock skew between the hub and Keycloak on exp/iat/nbf.
+                leeway=30,
             )
         except jwt.PyJWTError as exc:
             self.log.error("Failed to verify token: %r", exc)
