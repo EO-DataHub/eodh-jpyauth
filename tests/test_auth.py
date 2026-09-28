@@ -15,6 +15,7 @@ import jwt
 import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+from jwt.utils import base64url_encode
 
 from eodh_jpyauth.auth import EODHAuthenticator
 
@@ -47,11 +48,11 @@ def test_a_forged_signature_is_rejected() -> None:
     """This is the exact bug that shipped: verify_signature was False, so any signature -
     including one that is not cryptographically valid at all - was accepted.
     """
-    header = jwt.utils.base64url_encode(b'{"alg":"RS256","typ":"JWT"}').decode()
-    payload = jwt.utils.base64url_encode(
+    header = base64url_encode(b'{"alg":"RS256","typ":"JWT"}').decode()
+    payload = base64url_encode(
         b'{"sub":"attacker","workspaces":["someone-elses-workspace"],"aud":"eodh-workspaces"}'
     ).decode()
-    forged_signature = jwt.utils.base64url_encode(b"not-a-real-signature").decode()
+    forged_signature = base64url_encode(b"not-a-real-signature").decode()
     forged_token = f"{header}.{payload}.{forged_signature}"
     authenticator = _authenticator()
 
