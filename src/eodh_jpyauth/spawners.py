@@ -100,6 +100,8 @@ class KubeSpawner(KubeSpawner_):
         user_options |= super()._options_from_form(formdata)
         return user_options
 
+    # Adapted from KubeSpawner._expand_user_properties in jupyterhub/kubespawner
+    # (BSD-3-Clause, Copyright (c) 2017, Project Jupyter Contributors).
     def _expand_user_properties(self, template: str, slug_scheme: str | None = None) -> str:
         """
         Expand user properties in template strings
